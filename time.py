@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
-file = open('time.md', 'r')
-lines = file.readlines()
+with open('time.md', 'r') as file:
+    lines = file.readlines()
 
 block = False
 blocks = []
