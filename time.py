@@ -1,10 +1,12 @@
 #! /usr/bin/python3
 
-with open('time.md', 'r') as file:
-    lines = file.readlines()
-
 block = False
 blocks = []
-for line in lines:
-  item = 
-  blocks.append(item)
+
+with open('time.md', 'r') as file:
+  for line in file:
+    item = line 
+    blocks.append(item)
+
+for i in blocks:
+  print(i)
