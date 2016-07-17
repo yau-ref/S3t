@@ -11,6 +11,6 @@
         http://link.to/issue/4  
 
 ## 13.07.16
-08.00 - 23.00 - have fun again  
+08.00 - 23.00, 23.10 - 23.30 - have fun  
         http://link.to/issue/1  
         http://link.to/issue/5 
