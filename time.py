@@ -1,7 +1,8 @@
 #! /usr/bin/python3
 from datetime import datetime
-
-class Task(object):
+from functools import reduce
+    
+class Task:
   
   def __init__(self, name, timeMarks, issues = None):
     self.name = name
@@ -23,30 +24,42 @@ class Task(object):
     split = line.split('-')
     taskName = split.pop().strip()
     timeMarks = [timeMark.strip() for item in split for timeMark in item.split(',')]
-    return Task(taskName, timeMarks)
+    return Task(taskName, timeMarks) 
+  
+
+class Day:
+
+  def __init__(self, title, tasks = None):
+    self.title = title
+    self.tasks = tasks if tasks is not None else []
+  
+  def totalTime(self):
+    return reduce(lambda a, b: a + b.totalTime(), self.tasks, 0)      
+  
       
-def startNewDay(day, days):
+def startNewDay(day, days, title):
   if day is not None:
-    days.append(day)  
-  return []
+    days.append(day)
+  return Day(title)
 
 days = []
 day = None
 with open('time.md', 'r') as file:
   for line in file:
     if line.startswith('#'):
-      day = startNewDay(day, days)
+      day = startNewDay(day, days, line.strip('# \n'))
     elif line.strip():
       if not line.startswith(' '):
-        day.append(Task.fromLine(line)) 
+        day.tasks.append(Task.fromLine(line)) 
       else:
-        day[-1].issues.append(line.strip())
+        day.tasks[-1].issues.append(line.strip())
 days.append(day)
 
 for day in days:
-  for task in day:
-    print(task.name)
-    print(task.timeMarks)
-    print(task.issues)
-    print(task.totalTime())
-  print('===================')
+  print(day.title,': ', round(day.totalTime(), 2))
+  for task in day.tasks:
+    print(' -', task.name.capitalize(),' [', round(task.totalTime(), 2), ']')
+    for issue in task.issues:
+      print('    ', issue)
+    print()
+  print()
