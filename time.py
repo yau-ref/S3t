@@ -1,14 +1,14 @@
 #! /usr/bin/python3
 from datetime import datetime, timedelta
 from functools import reduce
-from itertools import takewhile
+from itertools import takewhile, groupby
 import sys
 import argparse
     
 class Task:
   
   def __init__(self, name, timeMarks, issues = None):
-    self.name = name
+    self.name = name.capitalize()
     self.timeMarks = timeMarks
     self.issues = issues if issues is not None else []
     self._totalTime = None
@@ -60,6 +60,37 @@ def readFromFile(fileName):
   return days
 
 
+def printReport(days):
+  # get all tasks and group their issues and times
+  
+  totalTime = 0
+  uniqueTasks = {}
+  for day in days:
+    for task in day.tasks:
+      totalTime += task.totalTime()
+      acc = uniqueTasks.get(task.name, [])
+      acc.append(task)
+      uniqueTasks[task.name] = acc
+
+  print('Total time:', round(totalTime, 2))
+  print()
+   
+  triplets = []
+  for taskName, tasks in uniqueTasks.items():
+    taskTime = 0
+    issues = set()
+    for task in tasks:
+      taskTime += task.totalTime()
+      for issue in task.issues:
+        issues.add(issue)
+    triplets.append((taskName, round(taskTime, 2), issues))
+  triplets.sort()
+  for t in triplets:
+    print(t[0], '-', t[1])
+    print('\n'.join(t[2]))
+    print()
+  
+  
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', action='store', default='time.md', dest='fileName', help='path to tasks file')
@@ -88,20 +119,22 @@ else:
 if not days:
   print("No records")
   sys.exit()
-  
-for day in days:
-  print(day.title,': ', round(day.totalTime(), 2), 'h')
-  for task in day.tasks:
+
+if args.report:
+  printReport(days)
+else:   
+  for day in days:
+    print(day.title,': ', round(day.totalTime(), 2), 'h')
+    for task in day.tasks:
+      print()
+      print(' -', task.name.capitalize(),': ',round(task.totalTime(), 2), 'h')
+      for issue in task.issues:
+        print('    ', issue)
     print()
-    print(' -', task.name.capitalize(),': ',round(task.totalTime(), 2), 'h')
-    for issue in task.issues:
-      print('    ', issue)
-  print()
-  
+    
  
 ## TODO:
-# money report
-# day report
-# weekly report
+# money
+# month
 # when started and when finished
 # python style
