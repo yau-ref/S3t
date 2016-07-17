@@ -73,16 +73,21 @@ if args.all and args.week:
   sys.exit()
  
 days = readFromFile(args.fileName)
+today = datetime.now().date()
+
 if args.all:
   pass
 elif args.week:
-  now = datetime.now().date()
-  weekStart = now - timedelta(days=now.weekday())
-  days = takewhile(lambda day: day.title >= weekStart, days)
+  weekStart = today - timedelta(days=today.weekday())
+  days = list(takewhile(lambda day: day.title >= weekStart, days))
 else:
-  days = days[0:1]
-  
-
+  lastDay = days[0:1]  
+  days = lastDay if len(lastDay) != 0 and lastDay[0].title == today else []
+ 
+ 
+if not days:
+  print("No records")
+  sys.exit()
   
 for day in days:
   print(day.title,': ', round(day.totalTime(), 2), 'h')
