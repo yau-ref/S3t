@@ -61,8 +61,6 @@ def readFromFile(fileName):
 
 
 def printReport(days):
-  # get all tasks and group their issues and times
-  
   totalTime = 0
   uniqueTasks = {}
   for day in days:
@@ -93,32 +91,34 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-f', action='store', default='time.md', dest='fileName', help='path to tasks file')
 parser.add_argument('-a', '--all', action='store_true', dest='all', help='show all')
 parser.add_argument('-w', '--week', action='store_true', dest='week', help='show week (from monday until today)')
+parser.add_argument('-m', '--month', action='store_true', dest='month', help='show month')
 parser.add_argument('-r', '--report', action='store_true', dest='report', help='shows report')
 parser.add_argument('-p', '--previous', action='store_true', dest='previous', help='`previous` modifier')
 
 args = parser.parse_args()
 
-if args.all and args.week:
+if [args.all, args.week, args.month].count(True) > 1:
   parser.print_help()
   sys.exit()
  
 days = readFromFile(args.fileName)
 today = datetime.now().date()
 
-if args.all:
-  pass
-elif args.week:
-  weekStart = today - timedelta(days=today.weekday())
-  weekEnd = weekStart + timedelta(days=6)
-  if args.previous:
-    weekStart -= timedelta(days=7)
-    weekEnd -= timedelta(days=7)
-  days = list(filter(lambda day: day.title >= weekStart and day.title <= weekEnd, days))
-else:
-  dayToFind = today if not args.previous else today - timedelta(days=1)
-  days = [day for day in days if day.title == dayToFind]
- 
- 
+if not args.all:
+  if args.week:
+    start = today - timedelta(days=today.weekday())
+    end = start + timedelta(days=6)
+    if args.previous:
+      start -= timedelta(days=7)
+      end -= timedelta(days=7)
+  elif args.month:
+    start = today - timedelta(days=today.day)
+    end = today
+  else:
+    start = today if not args.previous else today - timedelta(days=1)
+    end = start  
+  days = [day for day in days if day.title >= start and day.title <= end]
+
 if not days:
   print("No records")
   sys.exit()
@@ -139,5 +139,4 @@ else:
 ## TODO:
 # money
 # month
-# when started and when finished
 # python style
