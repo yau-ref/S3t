@@ -115,8 +115,8 @@ elif args.week:
     weekEnd -= timedelta(days=7)
   days = list(filter(lambda day: day.title >= weekStart and day.title <= weekEnd, days))
 else:
-  lastDay = days[0:1]  
-  days = lastDay if len(lastDay) != 0 and lastDay[0].title == today else []
+  dayToFind = today if not args.previous else today - timedelta(days=1)
+  days = [day for day in days if day.title == dayToFind]
  
  
 if not days:
