@@ -84,19 +84,18 @@ def printReport(days):
       for issue in task.issues:
         issues.add(issue)
     triplets.append((taskName, round(taskTime, 2), issues))
-  triplets.sort()
+  triplets.sort(key = lambda t: -t[1])
   for t in triplets:
-    print(t[0], '-', t[1])
-    print('\n'.join(t[2]))
-    print()
-  
-  
+    i = '(' + ', '.join(t[2]) + ')' if t[2] else ''
+    print("{:5.2f} | ".format(t[1]), t[0], i)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', action='store', default='time.md', dest='fileName', help='path to tasks file')
 parser.add_argument('-a', '--all', action='store_true', dest='all', help='show all')
 parser.add_argument('-w', '--week', action='store_true', dest='week', help='show week (from monday until today)')
 parser.add_argument('-r', '--report', action='store_true', dest='report', help='shows report')
+parser.add_argument('-p', '--previous', action='store_true', dest='previous', help='`previous` modifier')
+
 args = parser.parse_args()
 
 if args.all and args.week:
@@ -110,7 +109,11 @@ if args.all:
   pass
 elif args.week:
   weekStart = today - timedelta(days=today.weekday())
-  days = list(takewhile(lambda day: day.title >= weekStart, days))
+  weekEnd = weekStart + timedelta(days=6)
+  if args.previous:
+    weekStart -= timedelta(days=7)
+    weekEnd -= timedelta(days=7)
+  days = list(filter(lambda day: day.title >= weekStart and day.title <= weekEnd, days))
 else:
   lastDay = days[0:1]  
   days = lastDay if len(lastDay) != 0 and lastDay[0].title == today else []
