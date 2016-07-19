@@ -1,6 +1,5 @@
 #! /usr/bin/python3
 from datetime import datetime, timedelta
-from functools import reduce
 from itertools import takewhile, groupby
 import sys
 import argparse
@@ -19,8 +18,8 @@ class Task:
         return datetime(1,1,1,*map(int, mark.split('.')))
       times = list(map(parseMark, self.timeMarks))
       pairs = zip(times[0::2], times[1::2])
-      sums = map(lambda pair: (pair[1] - pair[0]).seconds / 60, pairs)
-      self._totalTime = sum(sums) / 60
+      sums = map(lambda pair: (pair[1] - pair[0]).seconds / 60.0, pairs)
+      self._totalTime = sum(sums) / 60.0
     return self._totalTime
     
   def fromLine(line):
@@ -37,7 +36,7 @@ class Day:
     self.tasks = tasks if tasks is not None else []
   
   def totalTime(self):
-    return reduce(lambda a, b: a + b.totalTime(), self.tasks, 0)       
+    return sum(task.totalTime() for task in tasks)
 
 def readFromFile(fileName):
   def startNewDay(day, days, title):
