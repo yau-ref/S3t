@@ -1,4 +1,4 @@
-##OcrIt!
+## OcrIt!
 
 Simple bash script that lets you to grab screen text and recognize it
 
