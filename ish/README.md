@@ -2,10 +2,9 @@
 
 When you need something cloud-ish and secure-ish
 
-push - send file
+push - send file  
 pull - get file
 
-Be careful - no checks and fuses
-
+Be careful - no checks and fuses  
 All params are hardcoded
 
